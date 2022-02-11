@@ -14,8 +14,8 @@ const skeletonTemplate = `
 </html>
 `.trim();
 const skeletonSelection = {
-	startLineNumber: 8,
-	endLineNumber: 8,
+	startLineNumber: 9,
+	endLineNumber: 9,
 	startColumn: 2,
 	endColumn: Infinity, // this works, but isn't documented
 };
