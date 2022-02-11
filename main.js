@@ -36,7 +36,7 @@ function debounce(delay, fn)
 	};
 }
 
-const tabs = document.querySelectorAll("#tabs .tab");
+const tabs = document.querySelectorAll("#toolbar .tab");
 function focusTab(ev)
 {
 	if(!ev.ctrlKey && !ev.metaKey) // metaKey is Cmd on Macs

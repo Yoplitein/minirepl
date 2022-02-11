@@ -1,15 +1,15 @@
 body
 {
-	height: 100vh;
-	margin: 0px;
-	
 	display: grid;
 	grid-template:
-		/* "toolbar" 2em */
+		"toolbar" 2em
 		"editor" min-content
 		"output" 1fr
 		/ 100vw
 	;
+	
+	height: 100vh;
+	margin: 0px;
 	
 	background-color: #9e9e9e;
 	font-family: sans-serif;
@@ -19,38 +19,18 @@ body
 {
 	grid-area: toolbar;
 	
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
+	padding: 5px;
+	padding-bottom: 0px;
 }
 
-/* #toolbar > *
-{
-} */
-
-#editor-box
-{
-	grid-area: editor;
-	min-height: 7em;
-	max-height: 90vh;
-	height: 40vh;
-	resize: vertical;
-	overflow: hidden;
-	border: none;
-}
-
-#tabs
-{
-	padding: 5px 5px 0px 5px;
-}
-
-#tabs .tab
+#toolbar .tab
 {
 	display: inline-block;
 	
 	width: 3.5em;
 	margin-right: 5px;
 	padding: 5px;
+	vertical-align: bottom;
 	
 	background-color: #909090;
 	border: 2px solid black;
@@ -58,7 +38,7 @@ body
 	cursor: pointer;
 }
 
-#tabs .tab.selected
+#toolbar .tab.selected
 {
 	background-color: #9e9e9e;
 	font-weight: bold;
@@ -66,12 +46,20 @@ body
 
 #editor
 {
-	height: 100%;
+	grid-area: editor;
+	
+	min-height: 7em;
+	max-height: 90vh;
+	height: 40vh;
+	
+	resize: vertical;
+	overflow: hidden;
 }
 
 iframe
 {
 	grid-area: output;
+	
 	width: 100%;
 	height: 100%;
 }
