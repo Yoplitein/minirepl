@@ -1,3 +1,28 @@
+const monacoBaseURL = "https://cdn.jsdelivr.net/npm/monaco-editor@0.30.0/min/vs";
+
+const skeletonTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<style>
+	</style>
+</head>
+<body>
+	<h1>Hello, World!</h1>
+	
+	<!-- <script type="module">
+	</script> -->
+</body>
+</html>
+`.trim();
+const skeletonSelection = {
+	startLineNumber: 9,
+	endLineNumber: 10,
+	startColumn: 2,
+	endColumn: Infinity, // this works, but isn't documented
+};
+
 const editorContainer = document.querySelector("#editor");
 const frame = document.querySelector("iframe");
 let editor;
@@ -37,17 +62,22 @@ function refresh()
 	frame.srcdoc = editor.getModel().getValue();
 }
 
-require.config({ paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.32.1/min/vs" } });
-require(["vs/editor/editor.main"], () => {
+async function main()
+{
+	require.config({ paths: { vs: monacoBaseURL } });
+	await new Promise((resolve) => require(["vs/editor/editor.main"], resolve));
+	
+	// monaco.languages.html.htmlDefaults.setOptions({data: { useDefaultDataProvider: true }});
+	monaco.languages.html.htmlDefaults.setOptions({ ...monaco.languages.html.htmlDefaults.options, suggest: {css: true, javascript: true} });
+	
 	editor = monaco.editor.create(editorContainer, {
-		value: "<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n\t<h1>Hello, World!</h1>\n</body>\n</html>",
+		value: skeletonTemplate,
 		language: "html",
 		theme: "vs-dark",
 		minimap: {enabled: false},
 		insertSpaces: false,
 		autoIndent: "full",
 	});
-	refresh();
 	new ResizeObserver(debounce(100, editor.layout.bind(editor))).observe(editorContainer);
 	/* editor.getModel().onDidChangeContent(debounce(500, () => {
 		console.log("changed");
@@ -61,13 +91,16 @@ require(["vs/editor/editor.main"], () => {
 		console.log("open?");
 	});*/
 	
-	const startPos = {
-		startLineNumber: 6,
-		endLineNumber: 6,
-		startColumn: 2,
-		endColumn: Infinity,
-	};
-	editor.revealRangeInCenter(startPos);
-	editor.setSelection(startPos);
+	editor.revealRangeInCenter(skeletonSelection);
+	editor.setSelection(skeletonSelection);
 	editor.focus();
-});
+	refresh();
+}
+
+// we load the script here so updating is as simple as changing monacoBaseURL
+{
+	let loaderScript = document.createElement("script");
+	loaderScript.src = `${monacoBaseURL}/loader.js`;
+	loaderScript.addEventListener("load", main);
+	document.body.appendChild(loaderScript);
+}
