@@ -62,13 +62,26 @@ function refresh()
 	frame.srcdoc = editor.getModel().getValue();
 }
 
+function switchTab(newTab)
+{
+	// TODO
+	console.log("switch to tab", newTab);
+}
+{
+	const tabs = document.querySelectorAll("#tabs .tab");
+	tabs.forEach(e =>
+		e.addEventListener("click", ev => {
+			tabs.forEach(e => e.classList.remove("selected"));
+			ev.target.classList.add("selected");
+			switchTab(ev.target.dataset.model);
+		})
+	);
+}
+
 async function main()
 {
 	require.config({ paths: { vs: monacoBaseURL } });
-	await new Promise((resolve) => require(["vs/editor/editor.main"], resolve));
-	
-	// monaco.languages.html.htmlDefaults.setOptions({data: { useDefaultDataProvider: true }});
-	monaco.languages.html.htmlDefaults.setOptions({ ...monaco.languages.html.htmlDefaults.options, suggest: {css: true, javascript: true} });
+	await new Promise(resolve => require(["vs/editor/editor.main"], resolve));
 	
 	editor = monaco.editor.create(editorContainer, {
 		value: skeletonTemplate,
