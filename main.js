@@ -36,29 +36,42 @@ function debounce(delay, fn)
 	};
 }
 
-function focusEditorEvent(ev)
+const tabs = document.querySelectorAll("#tabs .tab");
+function focusTab(ev)
 {
-	if(
-		editorContainer.contains(document.activeElement) ||
-		(!ev.ctrlKey && !ev.metaKey) || // cmd for macs
-		ev.code !== "Digit1"
-	) return;
+	if(!ev.ctrlKey && !ev.metaKey) // metaKey is Cmd on Macs
+		return;
+	
+	switch(ev.code)
+	{
+		case "Digit1":
+			switchTab({ target: tabs[0] }); // terrible hack
+			break;
+		case "Digit2":
+			switchTab({ target: tabs[1] });
+			break;
+		case "Digit3":
+			switchTab({ target: tabs[2] });
+			break;
+		default:
+			return;
+	}
 	
 	ev.preventDefault();
 	editor.focus();
 }
-document.addEventListener("keydown", focusEditorEvent);
+document.addEventListener("keydown", focusTab);
 
 const resourceBlobURLs = [];
-function onFrameLoaded()
+function frameLoaded()
 {
 	// events dispatched within iframes don't bubble up, and the document is reset every refresh
-	frame.contentDocument.addEventListener("keydown", focusEditorEvent);
+	frame.contentDocument.addEventListener("keydown", focusTab);
 	
 	resourceBlobURLs.forEach(url => URL.revokeObjectURL(url));
 	resourceBlobURLs.length = 0;
 }
-frame.addEventListener("load", onFrameLoaded);
+frame.addEventListener("load", frameLoaded);
 
 const models = {
 	html: null,
@@ -93,10 +106,17 @@ const modelStates = {
 	css: null,
 	js: null,
 };
-function switchTab(newTab)
+function switchTab(ev)
 {
+	tabs.forEach(e => e.classList.remove("selected"));
+	ev.target.classList.add("selected");
+	
+	const newTab = ev.target.dataset.model
 	if(!(newTab in models))
 		throw new Error(`Unknown model ${newTab}`);
+	
+	if(newTab === currentModel)
+		return;
 	
 	modelStates[currentModel] = editor.saveViewState();
 	editor.setModel(models[newTab]);
@@ -105,16 +125,7 @@ function switchTab(newTab)
 	const state = modelStates[newTab];
 	if(state != null) editor.restoreViewState(state);
 }
-{
-	const tabs = document.querySelectorAll("#tabs .tab");
-	tabs.forEach(e =>
-		e.addEventListener("click", ev => {
-			tabs.forEach(e => e.classList.remove("selected"));
-			ev.target.classList.add("selected");
-			switchTab(ev.target.dataset.model);
-		})
-	);
-}
+tabs.forEach(e => e.addEventListener("click", switchTab));
 
 async function main()
 {
