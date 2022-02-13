@@ -24,6 +24,17 @@ const editorContainer = document.querySelector("#editor");
 const frame = document.querySelector("iframe");
 let editor;
 
+const modalContainer = document.querySelector("#modalContainer");
+document.querySelector("button#openModal").addEventListener("click",
+	() => document.body.classList.remove("modalClosed")
+);
+modalContainer.addEventListener("click", ev => {
+	// ignore clicks inside #modal
+	if(ev.target !== ev.currentTarget)
+		return;
+	document.body.classList.add("modalClosed");
+});
+
 function debounce(delay, fn)
 {
 	let timeout = null;

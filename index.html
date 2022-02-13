@@ -5,14 +5,62 @@
 	<title>minirepl</title>
 	<link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="modalClosed">
 	<div id="toolbar">
 		<span class="tab selected" data-model="html">HTML</span>
 		<span class="tab" data-model="css">CSS</span>
 		<span class="tab" data-model="js">JS</span>
+		
+		<button id="openModal">&#x26ED;</button>
 	</div>
 	<div id="editor"></div>
 	<iframe frameborder="0" srcdoc="<h1>Loading...</h1>" csp="default-src 'self' blob:"></iframe>
+	<div id="modalContainer">
+		<div id="modal">
+			<section>
+				<h3>Settings</h3>
+				<fieldset>
+					<legend>Auto-Refresh</legend>
+					<label>
+						<input type="checkbox" name="autoRefreshEnabled" checked>
+						Enabled
+					</label>
+					<label>
+						Delay, in milliseconds
+						<input type="number" name="autoRefreshDelay" value="1000">
+					</label>
+				</fieldset>
+				<fieldset>
+					<legend>Miscellaneous</legend>
+					<label>
+						<input type="checkbox" name="clearConsoleEnabled">
+						Clear console on refresh
+					</label>
+				</fieldset>
+			</section>
+			<section>
+				<h3>About</h3>
+				
+				<h4>Keyboard Shortcuts</h4>
+				<dl>
+					<dt><tt>Ctrl+Enter</tt></dt>
+					<dd>Refresh output page (even when auto-refresh is enabled)</dd>
+					<dt><tt>Ctrl+1/2/3</tt></dt>
+					<dd>
+						Select the HTML, CSS, and JS tabs respectively.
+						Each also focuses the editor, if e.g. you were previously interacting with
+						elements in the output.
+					</dd>
+				</dl>
+				
+				<h4>Source</h4>
+				<p>
+					You can find it on <a href="https://github.com/Yoplitein/minirepl">GitHub</a>.
+				</p>
+			</section>
+			<div id="dismissNote">Click anywhere outside this window to dismiss</div>
+		</div>
+	</div>
 	
 	<script type="module" src="main.js"></script>
 </body>

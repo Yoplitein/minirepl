@@ -1,3 +1,8 @@
+:root
+{
+	--modal-fade-time: .5s;
+}
+
 body
 {
 	display: grid;
@@ -7,7 +12,6 @@ body
 		"output" 1fr
 		/ 100vw
 	;
-	
 	height: 100vh;
 	margin: 0px;
 	
@@ -18,7 +22,6 @@ body
 #toolbar
 {
 	grid-area: toolbar;
-	
 	padding: 5px;
 	padding-bottom: 0px;
 }
@@ -26,7 +29,6 @@ body
 #toolbar .tab
 {
 	display: inline-block;
-	
 	width: 3.5em;
 	margin-right: 5px;
 	padding: 5px;
@@ -44,14 +46,18 @@ body
 	font-weight: bold;
 }
 
+#toolbar button
+{
+	vertical-align: top;
+	float: right; /* :eyebeams: */
+}
+
 #editor
 {
 	grid-area: editor;
-	
 	min-height: 7em;
 	max-height: 90vh;
 	height: 40vh;
-	
 	resize: vertical;
 	overflow: hidden;
 }
@@ -62,4 +68,101 @@ iframe
 	
 	width: 100%;
 	height: 100%;
+}
+
+h3, h4, dl
+{
+	margin: 0px;
+}
+
+h3 + *, h4 + *
+{
+	margin-bottom: .5em;
+}
+
+#modalContainer
+{
+	display: grid;
+	grid-template: 1fr max-content 1fr / 1fr 5fr 1fr;
+	
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100vw;
+	height: 100vh;
+	
+	background-color: #7f7f7fa0;
+	transition: opacity var(--modal-fade-time);
+}
+
+/* dirty hack -- we can't `filter: unset;` so we blur all but the modal */
+#toolbar, #editor, iframe
+{
+	filter: blur(6px);
+	transition: filter var(--modal-fade-time);
+}
+
+body.modalClosed #toolbar, body.modalClosed #editor, body.modalClosed iframe
+{
+	filter: none;
+}
+
+body.modalClosed #modalContainer
+{
+	opacity: 0;
+	pointer-events: none;
+}
+
+#modal
+{
+	grid-area: 2 / 2 / 3 / 3;
+	
+	display: flex;
+	flex-flow: row wrap;
+	padding: 5px;
+	overflow-y: auto;
+	
+	outline: 1px solid black;
+	border-radius: 15px;
+	background-color: #9e9e9e;
+}
+
+#modal > section
+{
+	--padding: .5em;
+	width: calc(50% - 2 * var(--padding));
+	padding: var(--padding);
+}
+
+#modal > #dismissNote
+{
+	margin-top: auto;
+	margin-bottom: 5px;
+	
+	color: #505050;
+	font-size: 95%;
+	font-style: italic;
+}
+
+#modal label
+{
+	display: block;
+}
+
+@media (max-width: 760px)
+{
+	#modalContainer
+	{
+		grid-template: 1fr 90vh 1fr / 1fr 90vw 1fr;
+	}
+	
+	#modal
+	{
+		flex-flow: column nowrap;
+	}
+	
+	#modal > section
+	{
+		width: unset;
+	}
 }
