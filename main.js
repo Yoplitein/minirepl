@@ -35,6 +35,13 @@ modalContainer.addEventListener("click", ev => {
 	document.body.classList.add("modalClosed");
 });
 
+const settings = {
+	autoRefreshEnabled: document.querySelector("input[name=autoRefreshEnabled]"),
+	autoRefreshDelay: document.querySelector("input[name=autoRefreshDelay]"),
+	clearConsoleEnabled: document.querySelector("input[name=clearConsoleEnabled]"),
+	embedJSAsModule: document.querySelector("input[name=embedJSAsModule]"),
+};
+
 function debounce(delay, fn)
 {
 	let timeout = null;
@@ -102,12 +109,12 @@ function refresh()
 	newDoc.head.appendChild(css);
 	
 	const js = newDoc.createElement("script");
-	js.type = "module"; // TODO: option
+	js.type = settings.embedJSAsModule.checked ? "module" : "text/javascript";
 	js.src = URL.createObjectURL(new Blob([models.js.getValue()], { type: "text/javascript" }));
 	resourceBlobURLs.push(css.href);
 	newDoc.body.appendChild(js);
 	
-	//console.clear(); // TODO: option
+	if(settings.clearConsoleEnabled.checked) console.clear();
 	frame.srcdoc = xmlSerializer.serializeToString(newDoc);
 }
 
@@ -138,6 +145,31 @@ function switchTab(ev)
 }
 tabs.forEach(e => e.addEventListener("click", switchTab));
 
+const autoRefreshCallbacks = {
+	html: null,
+	css: null,
+	js: null,
+};
+function resetAutoRefreshCallbacks()
+{
+	let newDelay = parseInt(settings.autoRefreshDelay.value);
+	if(newDelay === NaN)
+		newDelay = settings.autoRefreshDelay.value = 1000;
+	
+	const callback = debounce(newDelay, () => {
+		// for simplicity, always register callbacks but ignore them when not auto-refreshing
+		if(!settings.autoRefreshEnabled.checked) return;
+		refresh();
+	});
+	for(let model in autoRefreshCallbacks)
+	{
+		const disposable = autoRefreshCallbacks[model];
+		if(disposable !== null) disposable.dispose();
+		autoRefreshCallbacks[model] = models[model].onDidChangeContent(callback);
+	}
+}
+settings.autoRefreshDelay.addEventListener("input", resetAutoRefreshCallbacks);
+
 async function main()
 {
 	require.config({ paths: { vs: monacoBaseURL } });
@@ -155,9 +187,7 @@ async function main()
 		autoIndent: "full",
 	});
 	new ResizeObserver(debounce(100, editor.layout.bind(editor))).observe(editorContainer);
-	/* editor.getModel().onDidChangeContent(debounce(500, () => {
-		console.log("changed");
-	})); */
+	resetAutoRefreshCallbacks();
 	
 	editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, refresh);
 	/*editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
