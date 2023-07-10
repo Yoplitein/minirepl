@@ -1,4 +1,4 @@
-const monacoBaseURL = "https://cdn.jsdelivr.net/npm/monaco-editor@0.37.1/min/vs";
+const monacoBaseURL = "https://cdn.jsdelivr.net/npm/monaco-editor@0.40.0/min/vs";
 
 const skeletonTemplate = `
 <!DOCTYPE html>
