@@ -1,3 +1,5 @@
+import {url_btoa, url_atob, deflate, inflate} from "./serialize.js";
+
 const monacoBaseURL = "https://cdn.jsdelivr.net/npm/monaco-editor@0.40.0/min/vs";
 
 const skeletonTemplate = `
@@ -25,7 +27,7 @@ const frame = document.querySelector("iframe");
 let editor;
 
 const modalContainer = document.querySelector("#modalContainer");
-document.querySelector("button#openModal").addEventListener("click",
+document.querySelector("button[name=openModal]").addEventListener("click",
 	() => document.body.classList.remove("modalClosed")
 );
 modalContainer.addEventListener("click", ev => {
@@ -65,11 +67,12 @@ function onKeydown(ev)
 
 	if(!ev.ctrlKey && !ev.metaKey) // metaKey is Cmd on Macs
 		return;
-	
+
 	switch(ev.code)
 	{
 		case "Digit1":
-			switchTab({ target: tabs[0] }); // terrible hack
+			// terrible hack assuming `switchTab` uses only `ev.target`
+			switchTab({ target: tabs[0] });
 			break;
 		case "Digit2":
 			switchTab({ target: tabs[1] });
@@ -77,10 +80,16 @@ function onKeydown(ev)
 		case "Digit3":
 			switchTab({ target: tabs[2] });
 			break;
+		case "KeyS":
+			save();
+			break;
+		case "KeyO":
+			load();
+			break;
 		default:
 			return;
 	}
-	
+
 	ev.preventDefault();
 	editor.focus();
 }
@@ -107,19 +116,19 @@ const xmlSerializer = new XMLSerializer();
 function refresh()
 {
 	const newDoc = domParser.parseFromString(models.html.getValue(), "text/html");
-	
+
 	const css = newDoc.createElement("link");
 	css.rel = "stylesheet";
 	css.href = URL.createObjectURL(new Blob([models.css.getValue()], { type: "text/css" }));
 	resourceBlobURLs.push(css.href);
 	newDoc.head.appendChild(css);
-	
+
 	const js = newDoc.createElement("script");
 	js.type = settings.embedJSAsModule.checked ? "module" : "text/javascript";
 	js.src = URL.createObjectURL(new Blob([models.js.getValue()], { type: "text/javascript" }));
 	resourceBlobURLs.push(css.href);
 	newDoc.body.appendChild(js);
-	
+
 	if(settings.clearConsoleEnabled.checked) console.clear();
 	frame.srcdoc = xmlSerializer.serializeToString(newDoc);
 }
@@ -134,18 +143,18 @@ function switchTab(ev)
 {
 	tabs.forEach(e => e.classList.remove("selected"));
 	ev.target.classList.add("selected");
-	
+
 	const newTab = ev.target.dataset.model
 	if(!(newTab in models))
 		throw new Error(`Unknown model ${newTab}`);
-	
+
 	if(newTab === currentModel)
 		return;
-	
+
 	modelStates[currentModel] = editor.saveViewState();
 	editor.setModel(models[newTab]);
 	currentModel = newTab;
-	
+
 	const state = modelStates[newTab];
 	if(state != null) editor.restoreViewState(state);
 }
@@ -161,7 +170,7 @@ function resetAutoRefreshCallbacks()
 	let newDelay = parseInt(settings.autoRefreshDelay.value);
 	if(newDelay === NaN)
 		newDelay = settings.autoRefreshDelay.value = 1000;
-	
+
 	const callback = debounce(newDelay, () => {
 		// for simplicity, always register callbacks but ignore them when not auto-refreshing
 		if(!settings.autoRefreshEnabled.checked) return;
@@ -176,15 +185,52 @@ function resetAutoRefreshCallbacks()
 }
 settings.autoRefreshDelay.addEventListener("input", resetAutoRefreshCallbacks);
 
+async function save()
+{
+	let state = {
+		html: models.html.getValue(),
+		css: models.css.getValue(),
+		js: models.js.getValue(),
+	};
+	state = JSON.stringify(state);
+	state = await deflate(state);
+	state = url_btoa(state);
+	console.log(state.length);
+
+	let url = new URL(document.location);
+	url.search = state;
+	prompt("Copy/paste this", url);
+}
+document.querySelector("button[name=save]").addEventListener("click", () => save());
+
+async function load(state = null)
+{
+	if(state === null)
+	{
+		state = prompt("Paste a previously saved URL");
+		if(state === null) return;
+		state = state.substring(state.indexOf("?") + 1);
+	}
+	state = url_atob(decodeURIComponent(state));
+	state = await inflate(state);
+
+	let {html, css, js} = JSON.parse(state);
+	models.html.setValue(html);
+	models.css.setValue(css);
+	models.js.setValue(js);
+	refresh();
+}
+document.querySelector("button[name=load]").addEventListener("click", () => load());
+
 async function main()
 {
 	require.config({ paths: { vs: monacoBaseURL } });
 	await new Promise(resolve => require(["vs/editor/editor.main"], resolve));
-	
+
 	models.html = monaco.editor.createModel(skeletonTemplate, "html");
 	models.css = monaco.editor.createModel("", "css");
 	models.js = monaco.editor.createModel("", "javascript");
-	
+
 	editor = monaco.editor.create(editorContainer, {
 		model: models.html,
 		theme: "vs-dark",
@@ -194,19 +240,18 @@ async function main()
 	});
 	new ResizeObserver(debounce(100, editor.layout.bind(editor))).observe(editorContainer);
 	resetAutoRefreshCallbacks();
-	
+
 	editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, refresh);
-	/*editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-		console.log("save?");
-	});
-	editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyO, () => {
-		console.log("open?");
-	});*/
-	
+
 	editor.revealRangeInCenter(skeletonSelection);
 	editor.setSelection(skeletonSelection);
 	editor.focus();
-	refresh();
+
+	const query = document.location.search;
+	if(query.length > 1)
+		load(query.substring(1));
+	else
+		refresh();
 }
 
 // we load the script here so updating is as simple as changing monacoBaseURL
