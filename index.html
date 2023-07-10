@@ -10,7 +10,7 @@
 		<span class="tab selected" data-model="html">HTML</span>
 		<span class="tab" data-model="css">CSS</span>
 		<span class="tab" data-model="js">JS</span>
-		
+
 		<button id="openModal">&#x26ED;</button>
 	</div>
 	<div id="editor"></div>
@@ -44,28 +44,30 @@
 			</section>
 			<section>
 				<h3>About</h3>
-				
+
 				<h4>Keyboard Shortcuts</h4>
 				<dl>
-					<dt><tt>Ctrl+Enter</tt></dt>
+					<dt><kbd>Ctrl</kbd>+<kbd>Enter</kbd></dt>
 					<dd>Refresh output page (even when auto-refresh is enabled)</dd>
-					<dt><tt>Ctrl+1/2/3</tt></dt>
+					<dt><kbd>Ctrl</kbd>+<kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd></dt>
 					<dd>
-						Select the HTML, CSS, and JS tabs respectively.
+						Select the HTML, CSS, or JS tabs respectively.
 						Each also focuses the editor, if e.g. you were previously interacting with
 						elements in the output.
 					</dd>
 				</dl>
-				
+
 				<h4>Source</h4>
 				<p>
 					You can find it on <a href="https://github.com/Yoplitein/minirepl">GitHub</a>.
 				</p>
 			</section>
-			<div id="dismissNote">Click anywhere outside this window to dismiss</div>
+			<div id="dismissNote">
+				Click anywhere outside this window (or press <kbd>Escape</kbd>) to dismiss
+			</div>
 		</div>
 	</div>
-	
+
 	<script type="module" src="main.js"></script>
 </body>
 </html>

@@ -55,8 +55,14 @@ function debounce(delay, fn)
 }
 
 const tabs = document.querySelectorAll("#toolbar .tab");
-function focusTab(ev)
+function onKeydown(ev)
 {
+	if(!document.body.classList.contains("modalClosed") && ev.code == "Escape")
+	{
+		document.body.classList.add("modalClosed");
+		return;
+	}
+
 	if(!ev.ctrlKey && !ev.metaKey) // metaKey is Cmd on Macs
 		return;
 	
@@ -78,14 +84,14 @@ function focusTab(ev)
 	ev.preventDefault();
 	editor.focus();
 }
-document.addEventListener("keydown", focusTab);
+document.addEventListener("keydown", onKeydown);
 
 const resourceBlobURLs = [];
 function frameLoaded()
 {
 	// events dispatched within iframes don't bubble up, and the document is reset every refresh
-	frame.contentDocument.addEventListener("keydown", focusTab);
-	
+	frame.contentDocument.addEventListener("keydown", onKeydown);
+
 	resourceBlobURLs.forEach(url => URL.revokeObjectURL(url));
 	resourceBlobURLs.length = 0;
 }
