@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang=en><script type=importmap>{"imports":{"8Kmwh":"./tsMode.6269b875.js","9XJc4":"./css.eb450ec4.js","9lt8D":"./html.worker.7724c288.js","b3yUs":"./html.worker.d48d87cd.js","cCtkF":"./htmlMode.6279cff8.js","db71l":"./editor.worker.539d179b.js","e8tU2":"./cssMode.2fda5787.js","fS3wA":"./css.worker.b730c55c.js","h1Uip":"./ts.worker.8c262714.js","hoeid":"./typescript.9828425e.js","iAxEE":"./html.603d9f2f.js","lKeKA":"./javascript.f85ddc6c.js"}}</script><script type=module src=html.worker.d48d87cd.js></script><link rel=stylesheet href=minirepl.9822a3b6.css><meta charset=UTF-8><title>minirepl</title><link rel=stylesheet href=minirepl.1617dd93.css><body class=modalClosed>
+	<div id=toolbar>
+		<span class="selected tab" data-model=html>HTML</span>
+		<span class=tab data-model=css>CSS</span>
+		<span class=tab data-model=js>JS</span>
+
+		<button name=openModal>⛭</button>
+		<button name=load>Load</button>
+		<button name=save>Save</button>
+	</div>
+	<div id=editor></div>
+	<iframe frameborder=0 srcdoc="<h1>Loading...</h1>" csp="default-src 'self' blob:"></iframe>
+	<div id=modalContainer>
+		<div id=modal>
+			<section>
+				<h3>Settings</h3>
+				<fieldset>
+					<legend>Auto-Refresh</legend>
+					<label>
+						<input type=checkbox name=autoRefreshEnabled checked>
+						Enabled
+					</label>
+					<label>
+						Delay, in milliseconds
+						<input type=number name=autoRefreshDelay value=500>
+					</label>
+				</fieldset>
+				<fieldset>
+					<legend>Miscellaneous</legend>
+					<label>
+						<input type=checkbox name=clearConsoleEnabled>
+						Clear console on refresh
+					</label>
+					<label>
+						<input type=checkbox name=embedJSAsModule checked>
+						Embed JS as a module (allows using import statements)
+					</label>
+				</fieldset>
+			</section>
+			<section>
+				<h3>About</h3>
+
+				<h4>Keyboard Shortcuts</h4>
+				<dl>
+					<dt><kbd>Ctrl</kbd>+<kbd>Enter</kbd></dt>
+					<dd>Refresh output page (even when auto-refresh is enabled)</dd>
+					<dt><kbd>Ctrl</kbd>+<kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd></dt>
+					<dd>
+						Select the HTML, CSS, or JS tabs respectively.
+						Each also focuses the editor, if e.g. you were previously interacting with
+						elements in the output.
+					</dd>
+					<dt><kbd>Ctrl</kbd>+<kbd>S</kbd></dt>
+					<dd>Save document to URL</dd>
+					<dt><kbd>Ctrl</kbd>+<kbd>O</kbd></dt>
+					<dd>Load from URL (as an alternative to pasting into address bar)</dd>
+				</dl>
+
+				<h4>Source</h4>
+				<p>
+					You can find it on <a href=https://github.com/Yoplitein/minirepl>GitHub</a>.
+				</p>
+			</section>
+			<div id=dismissNote>
+				Click anywhere outside this window (or press <kbd>Escape</kbd>) to dismiss
+			</div>
+		</div>
+	</div>
+
+	<script type=module src=minirepl.7584c324.js></script>
+
+
