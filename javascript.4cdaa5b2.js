@@ -1,0 +1,7 @@
+function e(e,t,a,i){Object.defineProperty(e,t,{get:a,set:i,enumerable:!0,configurable:!0})}var t=globalThis.parcelRequire5e9e;(0,t.register)("iQN0u",function(a,i){e(a.exports,"conf",()=>n),e(a.exports,"language",()=>g);/*!-----------------------------------------------------------------------------
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Version: 0.44.0(3e047efd345ff102c8c61b5398fb30845aaac166)
+ * Released under the MIT license
+ * https://github.com/microsoft/monaco-editor/blob/main/LICENSE.txt
+ *-----------------------------------------------------------------------------*/// src/basic-languages/javascript/javascript.ts
+var s=t("6oxPF"),n=s.conf,g={defaultToken:"invalid",tokenPostfix:".js",keywords:["break","case","catch","class","continue","const","constructor","debugger","default","delete","do","else","export","extends","false","finally","for","from","function","get","if","import","in","instanceof","let","new","null","return","set","static","super","switch","symbol","this","throw","true","try","typeof","undefined","var","void","while","with","yield","async","await","of"],typeKeywords:[],operators:s.language.operators,symbols:s.language.symbols,escapes:s.language.escapes,digits:s.language.digits,octaldigits:s.language.octaldigits,binarydigits:s.language.binarydigits,hexdigits:s.language.hexdigits,regexpctl:s.language.regexpctl,regexpesc:s.language.regexpesc,tokenizer:s.language.tokenizer}});
