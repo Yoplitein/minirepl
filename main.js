@@ -126,7 +126,7 @@ function refresh()
 	const js = newDoc.createElement("script");
 	js.type = settings.embedJSAsModule.checked ? "module" : "text/javascript";
 	js.src = URL.createObjectURL(new Blob([models.js.getValue()], { type: "text/javascript" }));
-	resourceBlobURLs.push(css.href);
+	resourceBlobURLs.push(js.href);
 	newDoc.body.appendChild(js);
 
 	if(settings.clearConsoleEnabled.checked) console.clear();
@@ -144,7 +144,7 @@ function switchTab(ev)
 	tabs.forEach(e => e.classList.remove("selected"));
 	ev.target.classList.add("selected");
 
-	const newTab = ev.target.dataset.model
+	const newTab = ev.target.dataset.model;
 	if(!(newTab in models))
 		throw new Error(`Unknown model ${newTab}`);
 
@@ -195,7 +195,6 @@ async function save()
 	state = JSON.stringify(state);
 	state = await deflate(state);
 	state = url_btoa(state);
-	console.log(state.length);
 
 	let url = new URL(document.location);
 	url.search = state;
