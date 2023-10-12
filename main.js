@@ -1,6 +1,5 @@
+import monaco from "./monaco.js";
 import {url_btoa, url_atob, deflate, inflate} from "./serialize.js";
-
-const monacoBaseURL = "https://cdn.jsdelivr.net/npm/monaco-editor@0.40.0/min/vs";
 
 const skeletonTemplate = `
 <!DOCTYPE html>
@@ -221,11 +220,28 @@ async function load(state = null)
 }
 document.querySelector("button[name=load]").addEventListener("click", () => load());
 
+import HTMLWorker from "url:monaco-editor/esm/vs/language/html/html.worker.js";
+import CSSWorker from "url:monaco-editor/esm/vs/language/css/css.worker.js";
+import TSWorker from "url:monaco-editor/esm/vs/language/typescript/ts.worker.js";
+import EditorWorker from "url:monaco-editor/esm/vs/editor/editor.worker.js";
+
+globalThis.MonacoEnvironment = {
+	getWorkerUrl: function(moduleId, label) {
+		switch(label) {
+			case "html":
+				return HTMLWorker;
+			case "css":
+				return CSSWorker;
+			case "javascript":
+				return TSWorker;
+			default:
+				return EditorWorker;
+		}
+	},
+};
+
 async function main()
 {
-	require.config({ paths: { vs: monacoBaseURL } });
-	await new Promise(resolve => require(["vs/editor/editor.main"], resolve));
-
 	models.html = monaco.editor.createModel(skeletonTemplate, "html");
 	models.css = monaco.editor.createModel("", "css");
 	models.js = monaco.editor.createModel("", "javascript");
@@ -252,11 +268,4 @@ async function main()
 	else
 		refresh();
 }
-
-// we load the script here so updating is as simple as changing monacoBaseURL
-{
-	let loaderScript = document.createElement("script");
-	loaderScript.src = `${monacoBaseURL}/loader.js`;
-	loaderScript.addEventListener("load", main);
-	document.body.appendChild(loaderScript);
-}
+document.addEventListener("DOMContentLoaded", main);

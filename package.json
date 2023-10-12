@@ -1,0 +1,15 @@
+{
+	"name": "minirepl",
+	"private": true,
+	"source": "index.html",
+	"scripts": {
+		"serve": "parcel serve",
+		"build": "parcel build --no-source-maps"
+	},
+	"dependencies": {
+		"monaco-editor": "^0.44.0"
+	},
+	"devDependencies": {
+		"parcel": "^2.10.0"
+	}
+}
