@@ -1,4 +1,6 @@
 import monaco from "./monaco.js";
+import { emmetHTML, emmetCSS } from "emmet-monaco-es";
+
 import {url_btoa, url_atob, deflate, inflate} from "./serialize.js";
 
 const skeletonTemplate = `
@@ -242,6 +244,9 @@ globalThis.MonacoEnvironment = {
 
 async function main()
 {
+	emmetHTML(monaco, ["html"]);
+	emmetCSS(monaco, ["css"]);
+
 	models.html = monaco.editor.createModel(skeletonTemplate, "html");
 	models.css = monaco.editor.createModel("", "css");
 	models.js = monaco.editor.createModel("", "javascript");
