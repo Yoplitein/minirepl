@@ -57,10 +57,16 @@ export async function deflate(str)
 	const writePromise = writer.write(str).then(_ => writer.close());
 
 	let res = [];
-	const reader = stream.readable.pipeThrough(new CompressionStream(compressionMethod));
+	const reader = stream
+		.readable
+		.pipeThrough(new CompressionStream(compressionMethod))
+		.getReader();
 	const readPromise = new Promise(async resolve => {
-		for await(const chunk of reader)
-			res.push(...chunk);
+		while(true) {
+			const {done, value} = await reader.read();
+			if(done) break;
+			res.push(...value);
+		}
 		resolve();
 	});
 	await Promise.all([writePromise, readPromise]);
@@ -74,10 +80,16 @@ export async function inflate(bytes)
 	const writePromise = writer.write(bytes).then(_ => writer.close());
 
 	let res = "";
-	const reader = stream.readable.pipeThrough(new TextDecoderStream());
+	const reader = stream
+		.readable
+		.pipeThrough(new TextDecoderStream())
+		.getReader();
 	const readPromise = new Promise(async resolve => {
-		for await(const chunk of reader)
-			res += chunk;
+		while(true) {
+			const {done, value} = await reader.read();
+			if(done) break;
+			res += value;
+		}
 		resolve();
 	});
 	await Promise.all([writePromise, readPromise]);
